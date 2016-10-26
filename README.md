@@ -1,4 +1,5 @@
 # Gitlab on AWS
+[![Github All Releases](https://img.shields.io/github/downloads/jakubigla/terraform-ansible-aws-gitlab/total.svg)]()
 
 ## TL;TR
 This project installs Gitlab CE and Gitlab Runner on EC2 instance of your choice.
@@ -32,3 +33,6 @@ Get VM up by running ```vagrant up```. This will provision Vagrant box with ansi
 Run ```make ENV=ci plan``` to create an execution plan.
 
 Run ```make ENV=ci apply``` to execute terraform scripts. 
+
+## Notes
+While this architecture is cost effective, it's very easy to add an extra private subnet, couple of EC2 instances and then provision them with Gitlab runner. 
