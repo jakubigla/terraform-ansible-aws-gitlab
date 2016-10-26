@@ -1,0 +1,10 @@
+- name: Provision Vagrant box for running deployment script
+  hosts: campnoumanager
+  become: True
+  remote_user: vagrant
+  gather_facts: True
+  roles:
+    - geerlingguy.ansible
+    - migibert.terraform
+    - vagrant.config
+    - angstwad.docker_ubuntu

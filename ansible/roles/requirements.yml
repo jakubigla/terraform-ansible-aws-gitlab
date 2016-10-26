@@ -1,0 +1,4 @@
+- src: geerlingguy.ansible
+- src: https://github.com/jakubigla/ansible-role-gitlab.git
+- src: angstwad.docker_ubuntu
+- src: migibert.terraform

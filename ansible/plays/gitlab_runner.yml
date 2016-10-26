@@ -1,0 +1,36 @@
+- name: Setup Gitlab Runner
+  hosts: gitlab_runner
+  gather_facts: true
+  become: true
+  remote_user: "{{ remote_user }}"
+  pre_tasks:
+    - set_fact:
+        gitlab_runner_registration_token: "{{ lookup('file', '{{ artifacts_dir }}/{{ env|lower }}/runner_token') }}"
+
+    - name: Ensure gitlab certs directory exist
+      file: path=/etc/gitlab-runner/certs state=directory
+
+    - name: Ensure docker certs directory exist
+      file: path=/etc/docker/certs.d/ state=directory
+
+    - name: "Copy {{ gitlab_host }} cert file"
+      copy: src={{ artifacts_dir }}/{{ env|lower }}/ssl/{{ gitlab_host }}.crt dest=/etc/gitlab-runner/certs/{{ gitlab_host }}.crt owner=root group=root mode=0600
+
+    - name: "Copy {{ registry_host }} cert file for docker engine"
+      copy: src={{ artifacts_dir }}/{{ env|lower }}/ssl/{{ registry_host }}.crt dest=/usr/local/share/ca-certificates/{{ registry_host }}.crt owner=root group=root mode=0600
+
+    - name: "Copy {{ gitlab_host }} cert file for docker engine"
+      copy: src={{ artifacts_dir }}/{{ env|lower }}/ssl/{{ gitlab_host }}.crt dest=/usr/local/share/ca-certificates/{{ gitlab_host }}.crt owner=root group=root mode=0600
+
+    - name: Update global certs
+      shell: update-ca-certificates
+
+  roles:
+    - angstwad.docker_ubuntu
+    - docker.gc
+    - {
+          role: gitlab.runner,
+          gitlab_runner_tags: { docker },
+          gitlab_runner_description: "Docker Runner",
+          gitlab_runner_executor: "docker"
+      }

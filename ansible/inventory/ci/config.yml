@@ -1,0 +1,7 @@
+[tag_AnsibleIsCI_Yes]
+
+[gitlab:children]
+tag_AnsibleIsCI_Yes
+
+[gitlab_runner:children]
+tag_AnsibleIsCI_Yes

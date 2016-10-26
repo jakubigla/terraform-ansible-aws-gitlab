@@ -1,0 +1,5 @@
+gitlab_runner_coordinator_url: "https://{{ gitlab_host }}/ci"
+gitlab_runner_description: '{{ ansible_hostname }}'
+gitlab_runner_executor: 'docker'
+gitlab_runner_docker_image: 'docker:latest'
+gitlab_runner_tags: ["docker"]

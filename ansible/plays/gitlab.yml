@@ -1,0 +1,30 @@
+- name: Setup Gitlab
+  hosts: gitlab
+  gather_facts: true
+  become: true
+  remote_user: "{{ remote_user }}"
+  roles:
+    - ansible-role-gitlab
+  post_tasks:
+    - name: "Fetch {{ gitlab_host }} certificate"
+      fetch: src={{ gitlab_ssl_certificate }} dest={{ artifacts_dir }}/{{ env|lower }}/ssl/{{ gitlab_host }}.crt flat=yes
+
+    - name: "Fetch {{ registry_host }} certificate"
+      fetch: src={{ gitlab_registry_ssl_certificate }} dest={{ artifacts_dir }}/{{ env|lower }}/ssl/{{ registry_host }}.crt flat=yes
+
+    - name: Find runner token
+      become: true
+      become_user: gitlab-psql
+      vars:
+          ansible_ssh_pipelining: true
+          query: "SELECT runners_registration_token FROM application_settings ORDER BY id DESC LIMIT 1"
+          destination: "/tmp/runner_token"
+          psql_exec: "/opt/gitlab/embedded/bin/psql"
+          gitlab_db_name: "gitlabhq_production"
+      shell: '{{ psql_exec }} -h /var/opt/gitlab/postgresql/ -d {{ gitlab_db_name }} -t -A -c "{{ query }}" > {{ destination }}'
+
+    - name: Fetch CI Runner token
+      fetch: src=/tmp/runner_token dest={{ artifacts_dir }}/{{ env|lower }}/runner_token flat=yes
+
+    - name: Delete file containing CI Runner token
+      file: path=/tmp/runner_token state=absent

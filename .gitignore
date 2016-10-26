@@ -1,0 +1,10 @@
+*.retry
+.vagrant
+artifacts/*
+ansible/roles/external/*
+*.local.yml
+*.tfvars
+*.tfplan
+*.tfstate.backup
+.terraform
+!.gitkeep
